@@ -209,6 +209,36 @@ public class Main {
         }
     }
 
+    static void confirmarHabitaciones(Scanner scanner) {
+        System.out.print("Ingrese el nombre del hotel: ");
+        String nombre = scanner.nextLine();
+        System.out.print("Ingrese el día de inicio (01-31): ");
+        int inicio = scanner.nextInt();
+        System.out.print("Ingrese el día de finalización (01-31): ");
+        int fin = scanner.nextInt();
+        System.out.print("Cantidad de adultos: ");
+        int cantidadAdultos = scanner.nextInt();
+        System.out.print("Cantidad de niños: ");
+        int cantidadNiños = scanner.nextInt();
+        System.out.print("Ingrese la cantidad de habitaciones: ");
+        int habitaciones = scanner.nextInt();
+
+        for (Map<String, Object> hotel : hoteles) {
+            if (hotel.get("nombre").equals(nombre)) {
+                int disponibles = (int) hotel.get("habitaciones");
+                if (habitaciones <= disponibles) {
+                    System.out.printf("Habitaciones disponibles: %d.\nCaracterísticas: Básicas. Precio por noche: $%,d.\n",
+                            disponibles, hotel.get("precio"));
+
+                } else {
+                    System.out.println("No hay suficientes habitaciones disponibles.");
+                }
+                return;
+            }
+        }
+        System.out.println("No se encontró el hotel.");
+    }
+
 
 
 }
