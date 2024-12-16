@@ -147,6 +147,68 @@ public class Main {
         hoteles.add(hotel9);
     }
 
+    static void buscarHoteles(Scanner scanner) {
+        System.out.print("Ingrese la ciudad: ");
+        String ciudad = scanner.nextLine();
+        System.out.print("Ingrese el tipo de alojamiento (Hotel, Apartamento, Finca, Dia de Sol): ");
+        String tipo = scanner.nextLine();
+        System.out.print("Cantidad de adultos: ");
+        int cantidadAdultos = scanner.nextInt();
+        System.out.print("Cantidad de niños: ");
+        int cantidadNiños = scanner.nextInt();
+        System.out.print("Ingrese el día de inicio (01-31): ");
+        int inicio = scanner.nextInt();
+        System.out.print("Ingrese el día de finalización (01-31): ");
+        int fin = scanner.nextInt();
+        System.out.print("Ingrese la cantidad de habitaciones: ");
+        int habitaciones = scanner.nextInt();
+
+        List<Map<String, Object>> resultados = new ArrayList<>();
+        for (Map<String, Object> hotel : hoteles) {
+            if (hotel.get("ciudad").equals(ciudad) && hotel.get("tipo").equals(tipo)) {
+                if ((int) hotel.get("habitaciones") >= habitaciones) {
+                    resultados.add(hotel);
+                }
+            }
+        }
+
+        if (resultados.isEmpty()) {
+            System.out.println("No se encontraron hoteles disponibles con los datos ingresados.");
+            return;
+        }
+
+        for (Map<String, Object> hotel : resultados) {
+            int precioPorNoche = (int) hotel.get("precio");
+            int dias = fin - inicio + 1;
+            int parcial = fin - inicio + 1;
+            int precioParcial = precioPorNoche * parcial;
+            int precioTotal = precioPorNoche * dias * habitaciones;
+
+            if (fin >= 26) {
+                int aumento = (int) (precioTotal * 0.15);
+                precioTotal += aumento;
+                System.out.println("* Se aplica un aumento del 15% por hospedarse los últimos días del mes. Monto: $" + aumento);
+            } else if (inicio >= 10 && inicio <= 15) {
+                int aumento = (int) (precioTotal * 0.10);
+                precioTotal += aumento;
+                System.out.println("* Se aplica un aumento del 10% por hospedarse del 10 al 15. Monto: $" + aumento);
+            } else if (inicio >= 5 && inicio <= 10) {
+                int descuento = (int) (precioTotal * 0.08);
+                precioTotal -= descuento;
+                System.out.println("* Se aplica un descuento del 8% por hospedarse del 5 al 10. Monto: $" + descuento);
+            }
+
+            System.out.printf("\nHotel: %s\nCalificación: %d estrellas\nPrecio por noche: $%,d\nPrecio total: $%,d\n",
+                    hotel.get("nombre"), hotel.get("calificacion"), precioPorNoche, precioTotal);
+            System.out.println("Precio parcial $: " + precioParcial * habitaciones);
+            if (hotel.get("tipo").equals("Dia de Sol")){
+                System.out.println("Actividades" + hotel.get("actividades"));
+                System.out.println( "incluye almuerzo?" + hotel.get("almuerzo"));
+
+            }
+        }
+    }
+
 
 
 }
