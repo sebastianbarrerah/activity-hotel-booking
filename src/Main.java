@@ -239,6 +239,128 @@ public class Main {
         System.out.println("No se encontró el hotel.");
     }
 
+    static void realizarReserva(Scanner scanner) {
+        System.out.print("Ingrese su nombre: ");
+        String nombre = scanner.nextLine();
+        System.out.print("Ingrese su apellido: ");
+        String apellido = scanner.nextLine();
+        System.out.print("Ingrese su email: ");
+        String email = scanner.nextLine();
+        System.out.print("Ingrese su nacionalidad (pais): ");
+        String nacionalidad = scanner.nextLine();
+        System.out.print("Ingrese su fecha de nacimiento (año-mes-dia): ");
+        String fechaNacimiento = scanner.nextLine();
+        System.out.print("Ingrese su número de teléfono: ");
+        String telefono = scanner.nextLine();
+        System.out.print("Ingrese la hora aproximada de llegada (0-23): ");
+        int hora = scanner.nextInt();
 
+        System.out.print("Ingrese el nombre del hotel: ");
+        scanner.nextLine();
+        String nombreHotel = scanner.nextLine();
+        System.out.print("Ingrese el día de inicio (01-31): ");
+        int inicio = scanner.nextInt();
+        System.out.print("Ingrese el día de finalización (01-31): ");
+        int fin = scanner.nextInt();
+        System.out.print("Ingrese la cantidad de habitaciones: ");
+        int habitaciones = scanner.nextInt();
+
+        for (Map<String, Object> hotel : hoteles) {
+            if (hotel.get("nombre").equals(nombreHotel)) {
+                int disponibles = (int) hotel.get("habitaciones");
+                if (habitaciones <= disponibles) {
+                    reservas.add(new HashMap<>() {{
+                        put("cliente", new HashMap<String, Object>() {{
+                            put("nombre", nombre);
+                            put("apellido", apellido);
+                            put("email", email);
+                            put("nacionalidad", nacionalidad);
+                            put("telefono", telefono);
+                            put("hora", hora);
+                            put("fecha", fechaNacimiento);
+
+                        }});
+                        put("hotel", nombreHotel);
+                        put("inicio", inicio);
+                        put("fin", fin);
+                        put("habitaciones", habitaciones);
+                    }});
+
+                    hotel.put("habitaciones", disponibles - habitaciones);
+                    System.out.println("Reserva realizada con éxito.");
+                    return;
+                } else {
+                    System.out.println("No hay suficientes habitaciones disponibles.");
+                }
+                return;
+            }
+        }
+        System.out.println("No se encontró el hotel.");
+    }
+
+    static void actualizarReserva(Scanner scanner) {
+        System.out.print("Ingrese su email: ");
+        String email = scanner.nextLine();
+        System.out.print("Ingrese su fecha de nacimiento (año-mes-dia): ");
+        String fechaNacimiento = scanner.nextLine();
+
+        for (Map<String, Object> reserva : reservas) {
+            Map<String, Object> cliente = (Map<String, Object>) reserva.get("cliente");
+            if (cliente.get("email").equals(email) && cliente.get("fecha").equals(fechaNacimiento)) {
+                System.out.println("Reserva encontrada:");
+                System.out.printf("Hotel: %s, Fecha inicio: %d, Fecha fin: %d, Habitaciones: %d\n",
+                        reserva.get("hotel"), reserva.get("inicio"), reserva.get("fin"), reserva.get("habitaciones"));
+
+                System.out.println("¿Qué desea actualizar? 1. -- Cambiar habitación 2. -- Cambiar alojamiento");
+                int opcionCambio = scanner.nextInt();
+                scanner.nextLine();
+
+                if (opcionCambio == 1) {
+                    cambiarHabitacion(scanner, reserva);
+                } else if (opcionCambio == 2) {
+                    reservas.remove(reserva);
+                    System.out.println("Reserva eliminada. Realice una nueva reserva.");
+                    realizarReserva(scanner);
+                } else {
+                    System.out.println("Opción no válida.");
+                }
+                return;
+            }
+        }
+
+        System.out.println("No se encontró una reserva con el email y fecha proporcionadas.");
+    }
+
+    static void cambiarHabitacion(Scanner scanner, Map<String, Object> reserva) {
+        System.out.print("Ingrese la nueva cantidad de habitaciones: ");
+        int nuevasHabitaciones = scanner.nextInt();
+
+        String nombreHotel = (String) reserva.get("hotel");
+        for (Map<String, Object> hotel : hoteles) {
+            if (hotel.get("nombre").equals(nombreHotel)) {
+                int habitacionesDisponibles = (int) hotel.get("habitaciones");
+                int habitacionesActuales = (int) reserva.get("habitaciones");
+
+
+                if (nuevasHabitaciones > habitacionesActuales) {
+                    int habitacionesNecesarias = nuevasHabitaciones - habitacionesActuales;
+                    if (habitacionesNecesarias > habitacionesDisponibles) {
+                        System.out.println("No hay suficientes habitaciones disponibles.");
+                        return;
+                    }
+                }
+
+
+                hotel.put("habitaciones", habitacionesDisponibles + habitacionesActuales - nuevasHabitaciones);
+
+                reserva.put("habitaciones", nuevasHabitaciones);
+
+                System.out.println("Cambio de habitaciones realizado con éxito.");
+                return;
+            }
+        }
+        System.out.println("No se encontró el hotel asociado a la reserva.");
+    }
 
 }
+
